@@ -4,7 +4,7 @@
  * Brecord
  *
  * @subpackage	Libraries
- * @category	Record Differencing
+ * @category	Record Differentiating
  * @author		Muhammad Bensekh Bugis
  * @link		http://bensekh.web.id
  * @version		1.0
@@ -103,7 +103,7 @@ class Brecord {
 	/**
 	 * Run
 	 *
-	 * Run and do the differencing
+	 * Run and do the differentiating
 	 *
 	 * @access	public
 	 * @param	none
@@ -222,7 +222,7 @@ class Brecord {
 	/**
 	 * Get all results
 	 *
-	 * Get all set of differencing results
+	 * Get all set of differentiating results
 	 *
 	 * @access	public
 	 * @return	record set / two-dimensional array
