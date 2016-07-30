@@ -7,7 +7,7 @@
  * @category	Record Differentiating
  * @author		Muhammad Bensekh Bugis
  * @link		http://bensekh.web.id
- * @version		1.0
+ * @version		1.0.1
  */
 class Brecord {
 	
@@ -64,9 +64,12 @@ class Brecord {
 	 *
 	 * @access	public
 	 * @param	string or associative array in ['old_rec_pk' => 'new_rec_pk'] bases
+	 *          or just set the value if both old and new record have the same unique field name
 	 * @return	void
 	 */
 	public function setUniqueKey($unique_key = false) {
+		!$unique_key && $this->unique_key = [];
+		
 		if(is_string($unique_key)) {
 			$this->unique_key = array($unique_key => $unique_key);
 		} else {
@@ -81,15 +84,30 @@ class Brecord {
 	}
 	
 	/**
+	 * Unset unique key
+	 *
+	 * Clear defined unique key
+	 *
+	 * @access	public
+	 * @return	null
+	 */
+	public function unsetUniqueKey() {
+		$this->unique_key = [];
+	}
+	
+	/**
 	 * Set field set
 	 *
 	 * Set a field set of each or all records to compare
 	 *
 	 * @access	public
 	 * @param	numeric or associative array in ['old_rec_fieldname' => 'new_rec_fieldname'] bases
+	 *          or just set the value if both old and new record have the same field name
 	 * @return	void
 	 */
 	public function setFieldSet($field_set = false) {
+		$field_set && $this->field_set = [];
+		
 		foreach($field_set as $old_field => $new_field) {
 			if(is_numeric($old_field))
 				$this->field_set += array($new_field => $new_field);
@@ -98,6 +116,39 @@ class Brecord {
 		}
 		
 		return $this;
+	}
+	
+	/**
+	 * Add field set
+	 *
+	 * Add field set of each or all records to compare
+	 *
+	 * @access	public
+	 * @param	numeric or associative array in ['old_rec_fieldname' => 'new_rec_fieldname'] bases
+	 *          or just set the value if both old and new record have the same field name
+	 * @return	void
+	 */	
+	public function addFieldSet($field_set = false) {
+		foreach($field_set as $old_field => $new_field) {
+			if(is_numeric($old_field))
+				$this->field_set += array($new_field => $new_field);
+			else
+				$this->field_set += array($old_field => $new_field);
+		}
+		
+		return $this;
+	}
+	
+	/**
+	 * Unset all field sets
+	 *
+	 * Clear all defined field sets
+	 *
+	 * @access	public
+	 * @return	null
+	 */
+	public function unsetAllFieldSets() {
+		$this->field_set = [];
 	}
 	
 	/**
@@ -115,22 +166,28 @@ class Brecord {
 		$field_set = $this->field_set;
 		$unique_key = $this->unique_key;
 		
-		$uk_field_old = array_keys($unique_key)[0];
-		$uk_field_new = array_values($unique_key)[0];
+		$uk_field_old = array_keys($unique_key)[0]; // set value of uk field in old rec
+		$uk_field_new = array_values($unique_key)[0]; // set value of uk field in new rec
 		
-		$rec_old_uk = array_column($record_old, $uk_field_old);
-		$rec_new_uk = array_column($record_new, $uk_field_new);
+		$rec_old_uk = array_column($record_old, $uk_field_old); // set array of uk in old rec
+		$rec_new_uk = array_column($record_new, $uk_field_new); // set array of uk in new rec
 		
 		$to_add_uk = array_values(array_diff($rec_new_uk, $rec_old_uk));
 		$to_del_uk = array_values(array_diff($rec_old_uk, $rec_new_uk));
 		$to_chk_uk = array_intersect(array_column($record_old, $uk_field_old), array_column($record_new, $uk_field_new));
 		
-		@$to_del = array_map(function($uk) use($record_old, $rec_old_uk) { return $record_old[array_search($uk, $rec_old_uk)]; }, $to_del_uk);
-		@$to_add = array_map(function($uk) use($record_new, $rec_new_uk) { return $record_new[array_search($uk, $rec_new_uk)]; }, $to_add_uk);
-		
+		$to_del = [];
+		$to_add = [];
 		$to_old = [];
 		$to_upd = [];
 		$to_unc = [];
+		
+		$to_del = array_map(function($uk) use($record_old, $rec_old_uk) { return $record_old[array_search($uk, $rec_old_uk)]; }, $to_del_uk);
+		$to_add = array_map(function($uk) use($record_new, $rec_new_uk) { return $record_new[array_search($uk, $rec_new_uk)]; }, array_values(array_filter($to_add_uk, function($uk) { return trim($uk) != ''; })));
+		
+		foreach(array_filter($record_new, function($row) use($uk_field_new) { return trim($row[$uk_field_new]) == ''; }) as $new_row) {
+			array_push($to_add, $new_row);
+		}
 		
 		foreach($to_chk_uk as $uk) {
 			$k_old = array_search($uk, $rec_old_uk);

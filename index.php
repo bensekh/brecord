@@ -152,6 +152,13 @@ $json_new = '[
 		"value": 95
 	},
 	{
+		"id": "76503",
+		"name": "Lars Castaneda",
+		"company": "Mauris A Nunc Foundation",
+		"country": "Saint Martin",
+		"value": 95
+	},
+	{
 		"id": "45484",
 		"name": "Hyatt Larsen",
 		"company": "Per Inceptos Associates",
@@ -163,13 +170,6 @@ $json_new = '[
 		"name": "Anne Evans",
 		"company": "Magna Duis Limited",
 		"country": "Saint Barthelemy",
-		"value": 95
-	},
-	{
-		"id": "76503",
-		"name": "Lars Castaneda",
-		"company": "Mauris A Nunc Foundation",
-		"country": "Saint Martin",
 		"value": 95
 	},
 	{
@@ -185,6 +185,13 @@ $json_new = '[
 		"company": "Blandit Company",
 		"country": "Western Sahara",
 		"value": "900"
+	},
+	{
+		"id": "",
+		"name": "Koeshartanto",
+		"company": "Brecord, Co., Inc.",
+		"country": "Indonesia",
+		"value": 863
 	},
 	{
 		"id": "19948",
@@ -230,15 +237,8 @@ $json_new = '[
 	},
 	{
 		"id": "",
-		"name": "David Only",
-		"company": "Satpam",
-		"country": "Indonesia",
-		"value": 863
-	},
-	{
-		"id": "",
-		"name": "Dick Doank",
-		"company": "Pengamen",
+		"name": "Zulfiqar bin Saleh",
+		"company": "Brecord, Sdn. Bhd.",
 		"country": "Malaysia",
 		"value": 863
 	}
@@ -255,9 +255,183 @@ $brecord->setOldRecord($record_old)
 	->setUniqueKey(['no' => 'id'])
 	->setFieldSet(['nama' => 'name', 'company', 'country'])
 	->run();
+?>
+<html>
+<head>
+<title>Brecord Demo Page</title>
+<style>
+* {
+	font-family: 'Verdana';
+}
 
-print_r($brecord->getNewSet());
-print_r($brecord->getOldSet());
-print_r($brecord->getUpdatedSet());
-print_r($brecord->getDeletedSet());
-print_r($brecord->getUnchangedSet());
+table {
+	
+}
+
+th {
+	border: 1px black solid;
+	background: #AAAAAA;
+}
+
+td {
+	border: 1px black solid;
+}
+</style>
+</head>
+<h1>Brecord Demo Page</h1>
+<p>This page will demonstrate how Brecord detect changes between two sets of identical-column array.</p>
+<p>It will detect new row added, updated row, deleted row and unchanged row.</p>
+<p>It will be very useful to differentiating 2 tables.</p>
+<h2>Example:</h2>
+<?php
+echo '<h4>This table is an old record:</h4>';
+echo '<table>';
+echo '<tr>';
+foreach(array_keys($record_old[0]) as $hd) {
+	echo '<th>';
+	echo $hd;
+	echo '</th>';
+}
+echo '</tr>';
+foreach($record_old as $tr) {
+	echo '<tr>';
+	foreach($tr as $td) {
+		echo '<td>';
+		echo $td;
+		echo '</td>';
+	}
+	echo '</tr>';
+}
+echo '</table>';
+
+echo '<h4>This table is an new record:</h4>';
+echo '<table>';
+echo '<tr>';
+foreach(array_keys($record_new[0]) as $hd) {
+	echo '<th>';
+	echo $hd;
+	echo '</th>';
+}
+echo '</tr>';
+foreach($record_new as $tr) {
+	echo '<tr>';
+	foreach($tr as $td) {
+		echo '<td>';
+		echo $td;
+		echo '</td>';
+	}
+	echo '</tr>';
+}
+echo '</table>';
+?>
+<p>Then add some code:</p>
+<pre>$brecord = new Brecord();
+$brecord->setOldRecord($record_old) // set old record
+	->setNewRecord($record_new) // set new record
+	->setUniqueKey(['no' => 'id']) // set unique key on both old rec and new rec
+	->setFieldSet(['nama' => 'name', 'company', 'country']) // set what field to compare
+	->run();</pre>
+<?php
+echo '<h4>This table is a new set:</h4>';
+echo '<table>';
+echo '<tr>';
+foreach(array_keys($brecord->getNewSet()[0]) as $hd) {
+	echo '<th>';
+	echo $hd;
+	echo '</th>';
+}
+echo '</tr>';
+foreach($brecord->getNewSet() as $tr) {
+	echo '<tr>';
+	foreach($tr as $td) {
+		echo '<td>';
+		echo $td;
+		echo '</td>';
+	}
+	echo '</tr>';
+}
+echo '</table>';
+
+echo '<h4>This table is an old set (before update):</h4>';
+echo '<table>';
+echo '<tr>';
+foreach(array_keys($brecord->getOldSet()[0]) as $hd) {
+	echo '<th>';
+	echo $hd;
+	echo '</th>';
+}
+echo '</tr>';
+foreach($brecord->getOldSet() as $tr) {
+	echo '<tr>';
+	foreach($tr as $td) {
+		echo '<td>';
+		echo $td;
+		echo '</td>';
+	}
+	echo '</tr>';
+}
+echo '</table>';
+
+echo '<h4>This table is an updated set (after update):</h4>';
+echo '<table>';
+echo '<tr>';
+foreach(array_keys($brecord->getUpdatedSet()[0]) as $hd) {
+	echo '<th>';
+	echo $hd;
+	echo '</th>';
+}
+echo '</tr>';
+foreach($brecord->getUpdatedSet() as $tr) {
+	echo '<tr>';
+	foreach($tr as $td) {
+		echo '<td>';
+		echo $td;
+		echo '</td>';
+	}
+	echo '</tr>';
+}
+echo '</table>';
+
+echo '<h4>This table is a deleted set:</h4>';
+echo '<table>';
+echo '<tr>';
+foreach(array_keys($brecord->getDeletedSet()[0]) as $hd) {
+	echo '<th>';
+	echo $hd;
+	echo '</th>';
+}
+echo '</tr>';
+foreach($brecord->getDeletedSet() as $tr) {
+	echo '<tr>';
+	foreach($tr as $td) {
+		echo '<td>';
+		echo $td;
+		echo '</td>';
+	}
+	echo '</tr>';
+}
+echo '</table>';
+
+echo '<h4>This table is an unchanged set:</h4>';
+echo '<table>';
+echo '<tr>';
+foreach(array_keys($brecord->getUnchangedSet()[0]) as $hd) {
+	echo '<th>';
+	echo $hd;
+	echo '</th>';
+}
+echo '</tr>';
+foreach($brecord->getUnchangedSet() as $tr) {
+	echo '<tr>';
+	foreach($tr as $td) {
+		echo '<td>';
+		echo $td;
+		echo '</td>';
+	}
+	echo '</tr>';
+}
+echo '</table>';
+echo '<p>With Brecord one can easily seperate which row are created, updated, deleted and unchanged.</p>';
+echo '<p>Copyright by Bensekh &copy; 2016</p>';
+?>
+</html>
